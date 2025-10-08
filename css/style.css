@@ -1,0 +1,98 @@
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: rgb(16, 93, 34);
+    font-family: 'Press Start 2P', monospace;
+    margin: 0;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: #00FF00;
+    text-shadow: 2px 2px #000;
+}
+
+.wrapper-div {
+    height: 75vmin;
+    width: 80vmin;
+    background: #56555b;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 20px solid rgb(143, 248, 78);
+    box-shadow: 0 0 20px rgb(143, 248, 78);
+}
+
+.g-details {
+    color: beige;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid #444;
+}
+
+.g-board {
+    height: 100%;
+    width: 100%;
+    background: #121111;
+    display: grid;
+    grid-template: repeat(30, 1fr) / repeat(30, 1fr);
+}
+
+.g-board .food {
+    background: red;
+    border-radius: 50%;
+}
+
+.g-board .headOfSnake {
+    background: rgba(17, 247, 5, 0.808);
+    border-radius: 100%;
+    outline-style: solid;
+}
+
+#game-over-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 100;
+    font-family: 'Press Start 2P', monospace;
+}
+
+.hidden {
+    display: none;
+}
+
+button {
+    font-family: 'Press Start 2P', monospace;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    background: #00FF00;
+    border: none;
+    border-radius: 5px;
+    color: black;
+    transition: background 0.2s ease;
+}
+
+button:hover {
+    background: #00cc00;
+}
+
