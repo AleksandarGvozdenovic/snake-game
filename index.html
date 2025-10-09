@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
-
-    <!-- Nokia-style pixel font -->
+    
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="./css/style.css">
-    <script defer src="./app.js"></script>
+    <script defer src="app.js"></script>
 </head>
 <body>
     <header>
@@ -18,10 +17,17 @@
 
     <div class="wrapper-div">
         <div class="g-details">
+            <span class="player-name">Player: <span id="player-name-display">/</span></span>
             <span class="score">Score: 0</span>
             <span class="high-score">High Score: 0</span>
         </div>
         <div class="g-board"></div>
+    </div>
+
+    <div id="welcome-screen">
+        <h1>Welcome to Snake Game</h1>
+        <input type="text" id="player-name" placeholder="Enter your name">
+        <button id="start-button">Start Game</button>
     </div>
 
     <div id="game-over-screen" class="hidden">
@@ -29,5 +35,10 @@
         <p>Your Score: <span id="final-score">0</span></p>
         <button id="restart-button">Play Again</button>
     </div>
+
+    <audio id="eat-sound" src="./sounds/eat.mp3"></audio>
+    <audio id="game-over-sound" src="./sounds/game-over.mp3"></audio>
+
 </body>
 </html>
+
