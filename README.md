@@ -8,7 +8,7 @@ I chose to build this game because it’s a timeless concept and a great way to 
 
 ## 🚀 Getting Started
   ▶️ Play Online
-   
+   https://aleksandargvozdenovic.github.io/snake-game/
   Play the game here
 
 ## 🧭 How to Play
