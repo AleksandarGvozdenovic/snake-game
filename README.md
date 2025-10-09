@@ -9,7 +9,7 @@ I chose to build this game because it’s a timeless concept and a great way to 
 ## 🚀 Getting Started
   ▶️ Play Online
    https://aleksandargvozdenovic.github.io/snake-game/
-  Play the game here
+ 
 
 ## 🧭 How to Play
 
@@ -18,40 +18,50 @@ I chose to build this game because it’s a timeless concept and a great way to 
    Avoid hitting walls or your own body — this ends the game.
    Your high score is saved automatically in local storage.
 
-## 📂 Project Structure
-  snake-game/
-  │
-  ├── index.html        # Main HTML file
-  ├── css/
-  │   └── style.css     # Game styles
-  ├── app.js            # Game logic
-  └── README.md         # Project documentation
+
 
 ## 🧱 Technologies Used
   HTML5
   CSS3 (Flexbox, Grid)
   JavaScript (ES6+)
 
-## 🏁 MVP Features
-   ✅ Fully playable in browser
+## ✅ Features Implemented
 
-   ✅ Score and high score tracking
+  ✅ Functional snake movement and collision detection
 
-   ✅ Snake movement and growth logic
+  ✅ Food generation and score increase when the snake eats
 
-   ✅ Win/Loss condition with “Game Over” screen
+  ✅ Dynamic speed increase as the game progresses
 
-   ✅ Restart option
+  ✅ Game Over screen with score display and restart button
 
-   ✅ Responsive grid-based layout
+  ✅ Welcome screen with player name input before starting
 
-   ✅ Sound effects for eating and dying
+  ✅ Sound effects for eating and game over
 
-   ✅ Increasing speed as the player’s score rises
+  ✅ High Score saving using localStorage 
 
-## 💡 Future Improvements (Stretch Goals)
-  Add difficulty levels (easy, medium, pro)
-  Add mobile touch controls
+  ✅ Retro pixel-art design with Press Start 2P  font
+
+  ✅ Basic responsive adjustments for smaller devices
+
+## 🚀 Planned Features / Stretch Goals
+
+  Add difficulty levels (Easy, Medium, Hard)
+
+  Add touch controls for mobile users (swipe or on-screen arrows)
+
+  Add a pause/resume button
+
+  Add a settings panel to toggle sound or adjust speed
+
+  Add scoreboard 
+
+  Improve responsiveness for tablets and small screens
+
+  Add smooth animations ( fade in/out transitions)
+
+  Add a dark/light mode toggle
 
 ## 🙌 Attributions
   Game concept inspired by the classic “Snake”
