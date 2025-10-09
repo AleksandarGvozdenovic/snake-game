@@ -18,7 +18,7 @@ let highScore = localStorage.getItem("high-score") || 0;
 highScoreSpan.textContent = `High Score: ${highScore}`;
 
 // =====================start or restart game========================
-function initGame() {
+const initGame = () => {
   gameOver = false;
   snakeHeadPositionX = 5;
   snakeHeadPositionY = 8;
@@ -36,13 +36,13 @@ function initGame() {
 }
 
 //================set random food position on grid====================
-function changeFoodPosition() {
+const changeFoodPosition = () =>{
   foodX = Math.floor(Math.random() * 30) + 1;
   foodY = Math.floor(Math.random() * 30) + 1;
 }
 
 //=============handle direction changes for the snake=================
-function changeDirection(e) {
+const changeDirection = (e) =>{
   if (e.key === "ArrowUp" && velocityY !== 1) {
     velocityX = 0;
     velocityY = -1;
@@ -59,7 +59,7 @@ function changeDirection(e) {
 }
 
 //====================main game loop===============================
-function runGame() {
+const runGame = ()=>{
   if (gameOver) {
     clearInterval(setIntervalId);
     finalScoreDisplay.textContent = score;
