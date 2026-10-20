@@ -35,6 +35,12 @@ const status = requireElement<HTMLElement>('status');
 const modeButton = requireElement<HTMLButtonElement>('display-mode');
 
 const fullscreenButton = requireElement<HTMLButtonElement>('fullscreen');
+function requireApp(): HTMLElement {
+  const element = document.querySelector<HTMLElement>('.app');
+  if (!element) throw new Error('Missing game container .app');
+  return element;
+}
+const app = requireApp();
 
 const framebuffer = new LcdFramebuffer();
 
@@ -620,6 +626,7 @@ function handleKeyDown(event: KeyboardEvent): void {
 
   if (controlled.includes(key)) event.preventDefault();
 
+  if (key === 'escape' && fullscreenFallback) { setFullscreenFallback(false); return; }
   if (key === 'f' && !event.repeat) { void toggleFullscreen(); return; }
 
   if (event.repeat && page !== 'game') return;
@@ -770,18 +777,52 @@ function updateMode(): void {
 
 function onModeClick(): void { remaster = !remaster; updateMode(); }
 
+let fullscreenFallback = false;
+
+function updateFullscreenButton(): void {
+  const active = fullscreenFallback || document.fullscreenElement === app;
+  fullscreenButton.textContent = active ? 'EXIT FULLSCREEN ⛶' : 'FULLSCREEN ⛶';
+  fullscreenButton.setAttribute('aria-pressed', String(active));
+}
+
+function setFullscreenFallback(active: boolean): void {
+  fullscreenFallback = active;
+  app.classList.toggle('fullscreen-fallback', active);
+  updateFullscreenButton();
+  window.requestAnimationFrame(() => renderer.resize());
+}
+
 async function toggleFullscreen(): Promise<void> {
+  if (fullscreenFallback) {
+    setFullscreenFallback(false);
+    return;
+  }
 
-  try {
+  if (document.fullscreenElement === app) {
+    if (typeof document.exitFullscreen === 'function') {
+      try { await document.exitFullscreen(); }
+      catch {}
+    }
+    updateFullscreenButton();
+    return;
+  }
 
-    if (document.fullscreenElement) await document.exitFullscreen();
+  if (typeof app.requestFullscreen === 'function') {
+    try {
+      await app.requestFullscreen();
+      updateFullscreenButton();
+      renderer.resize();
+      return;
+    } catch {}
+  }
 
-    else await viewport.requestFullscreen();
+  setFullscreenFallback(true);
+}
 
-    if (page === 'game') renderer.resize();
-
-  } catch (error) { status.textContent = `Fullscreen unavailable: ${String(error)}`; }
-
+function onFullscreenChange(): void {
+  if (document.fullscreenElement && fullscreenFallback) setFullscreenFallback(false);
+  updateFullscreenButton();
+  renderer.resize();
 }
 
 function onFullscreenClick(): void { void toggleFullscreen(); }
@@ -797,6 +838,8 @@ window.addEventListener('keydown', handleKeyDown);
 modeButton.addEventListener('click', onModeClick);
 
 fullscreenButton.addEventListener('click', onFullscreenClick);
+document.addEventListener('fullscreenchange', onFullscreenChange);
+updateFullscreenButton();
 
 touch.addEventListener('click', onTouchClick);
 canvas.addEventListener('click', onLcdClick);
@@ -822,6 +865,8 @@ if (import.meta.hot) {
     modeButton.removeEventListener('click', onModeClick);
 
     fullscreenButton.removeEventListener('click', onFullscreenClick);
+    document.removeEventListener('fullscreenchange', onFullscreenChange);
+    app.classList.remove('fullscreen-fallback');
 
     touch.removeEventListener('click', onTouchClick);
     canvas.removeEventListener('click', onLcdClick);
