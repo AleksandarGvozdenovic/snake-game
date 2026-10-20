@@ -145,12 +145,43 @@ touch.innerHTML = `
 
 viewport.after(touch);
 
+const fullscreenHud = document.createElement('div');
+fullscreenHud.className = 'fullscreen-game-hud';
+fullscreenHud.hidden = true;
+fullscreenHud.innerHTML = `
+  <span class="fullscreen-game-score" aria-label="Current score">SCORE: <span>0</span></span>
+  <div class="fullscreen-game-actions">
+    <button type="button" data-action="pause" aria-label="Pause game">Ⅱ <span>PAUSE</span></button>
+    <button type="button" data-action="exit" aria-label="Exit fullscreen">⤢</button>
+  </div>`;
+viewport.appendChild(fullscreenHud);
+const fullscreenScore = fullscreenHud.querySelector<HTMLElement>('.fullscreen-game-score span')!;
+
+function syncFullscreenGameView(): void {
+  const fullscreen = fullscreenFallback || document.fullscreenElement === app;
+  const isTouchLayout = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 650;
+  const isPlaying = page === 'game' && fullscreen && isTouchLayout;
+  app.classList.toggle('fullscreen-playing', isPlaying);
+  fullscreenHud.hidden = !isPlaying;
+  fullscreenScore.textContent = String(game.score);
+  renderer.setTopCrop(isPlaying ? 8 : 0);
+}
+
+function onFullscreenHudClick(event: MouseEvent): void {
+  const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-action]');
+  if (!button) return;
+  if (button.dataset.action === 'pause') pauseGame();
+  else if (button.dataset.action === 'exit') void toggleFullscreen();
+}
+fullscreenHud.addEventListener('click', onFullscreenHudClick);
+
 function textPixels(message: string, x: number, y: number): void {
   drawPixelText(framebuffer, message, x, y);
 }
 
 function drawGame(includeSnake = true): void {
 
+  fullscreenScore.textContent = String(game.score);
   framebuffer.clear();
 
   textPixels(`SCORE:${game.score}`, 1, 1);
@@ -311,7 +342,7 @@ function finishGame(): void {
   drawSnakeSprites(snakeFrame, game);
   const particles = createDeathParticles(
     snakeFrame.snapshot(),
-    pixelTextPoints('GAME OVER', 24, 5),
+    pixelTextPoints('GAME OVER', 24, app.classList.contains('fullscreen-playing') ? 17 : 5),
   );
   const started = performance.now();
   deathAnimationActive = true;
@@ -379,7 +410,8 @@ function newGame(): void {
 
   touch.classList.add('active');
 
-  status.textContent = `${game.mazeDefinition.name}${game.mazeDefinition.fidelity === 'reconstruction' ? ' (reconstruction)' : ''} · Arrows/WASD · 8↑ 2↓ 4← 6→ · P/Esc pause`;
+  syncFullscreenGameView();
+
 
   renderer.resize();
 
@@ -399,6 +431,8 @@ function resumeGame(): void {
   canvas.style.display = 'block';
 
   touch.classList.add('active');
+
+  syncFullscreenGameView();
 
   renderer.resize();
 
@@ -485,11 +519,9 @@ function menuEntries(): MenuItem[] {
 
       const definition = getMazeDefinition(id);
 
-      const reconstructed = definition.fidelity === 'reconstruction';
-
       return {
 
-        text: `${game.maze === id ? '◆ ' : ''}${definition.name}${reconstructed ? ' · RECON' : ''}`,
+        text: `${game.maze === id ? '◆ ' : ''}${definition.name}`,
 
         select: () => {
 
@@ -499,7 +531,6 @@ function menuEntries(): MenuItem[] {
 
           openPage('menu');
 
-          if (reconstructed) status.textContent = `${definition.name}: reconstructed maze layout (original coordinates unverified).`;
 
         },
 
@@ -543,7 +574,7 @@ function menuDescription(): string {
 
   if (page === 'settings') return 'SETTINGS';
 
-  if (page === 'maze') return 'SELECT MAZE · RECON = RECONSTRUCTION';
+  if (page === 'maze') return 'SELECT MAZE';
 
   if (page === 'top') return `TOP SCORE: ${best}`;
 
@@ -608,12 +639,9 @@ function openPage(next: Page): void {
   canvas.style.display = lcdGameOver ? 'block' : 'none';
   touch.classList.toggle('active', lcdGameOver);
   panel.classList.toggle('inner-page', next !== 'menu');
+  syncFullscreenGameView();
   refreshMenu();
-  if (lcdGameOver) {
-    status.textContent = 'GAME OVER · ↑/↓ izbor · Enter potvrda · dodir ekrana';
-  } else {
-    status.textContent = '↑ ↓ to choose · Enter to select · Esc to go back';
-  }
+  status.textContent = '';
 }
 
 function handleKeyDown(event: KeyboardEvent): void {
@@ -789,6 +817,7 @@ function setFullscreenFallback(active: boolean): void {
   fullscreenFallback = active;
   app.classList.toggle('fullscreen-fallback', active);
   updateFullscreenButton();
+  syncFullscreenGameView();
   window.requestAnimationFrame(() => renderer.resize());
 }
 
@@ -811,6 +840,7 @@ async function toggleFullscreen(): Promise<void> {
     try {
       await app.requestFullscreen();
       updateFullscreenButton();
+      syncFullscreenGameView();
       renderer.resize();
       return;
     } catch {}
@@ -822,6 +852,7 @@ async function toggleFullscreen(): Promise<void> {
 function onFullscreenChange(): void {
   if (document.fullscreenElement && fullscreenFallback) setFullscreenFallback(false);
   updateFullscreenButton();
+  syncFullscreenGameView();
   renderer.resize();
 }
 
@@ -839,6 +870,7 @@ modeButton.addEventListener('click', onModeClick);
 
 fullscreenButton.addEventListener('click', onFullscreenClick);
 document.addEventListener('fullscreenchange', onFullscreenChange);
+window.addEventListener('resize', syncFullscreenGameView);
 updateFullscreenButton();
 
 touch.addEventListener('click', onTouchClick);
@@ -866,7 +898,11 @@ if (import.meta.hot) {
 
     fullscreenButton.removeEventListener('click', onFullscreenClick);
     document.removeEventListener('fullscreenchange', onFullscreenChange);
-    app.classList.remove('fullscreen-fallback');
+    window.removeEventListener('resize', syncFullscreenGameView);
+    app.classList.remove('fullscreen-fallback', 'fullscreen-playing');
+
+    fullscreenHud.removeEventListener('click', onFullscreenHudClick);
+    fullscreenHud.remove();
 
     touch.removeEventListener('click', onTouchClick);
     canvas.removeEventListener('click', onLcdClick);

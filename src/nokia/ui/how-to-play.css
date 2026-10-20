@@ -73,7 +73,6 @@
 .howto-maze-card { min-width: 0; padding: 12px; border: 1px solid #617d54; border-radius: 7px; background: #283d24; }
 .howto-maze-card h4 { font-size: 13px; margin: 0 0 8px; }
 .howto-map-canvas { display: block; width: 100%; height: auto; aspect-ratio: 21 / 10; image-rendering: pixelated; background: #b5c982; }
-.howto-map-status { display: inline-block; margin: 9px 0 5px; padding: 3px 5px; border: 1px solid #718766; font-size: 9px; letter-spacing: .05em; color: #e9da9b; }
 .howto-maze-card p { font-size: 11px; line-height: 1.4; margin: 0; }
 @media (max-width: 720px) {
   .app-heading { flex-wrap: wrap; }

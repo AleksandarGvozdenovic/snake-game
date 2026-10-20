@@ -67,7 +67,7 @@ export function mountHowToPlay(options: GuideOptions): GuideController {
         <section><h3>Controls</h3>
           <div class="howto-two-col">
             <p><strong>Desktop</strong><br>↑ / 8 — up<br>↓ / 2 — down<br>← / 4 — left<br>→ / 6 — right<br>W A S D — alternative controls<br>* — turn 90° left<br># — turn 90° right<br>P / C / Esc — pause</p>
-            <p><strong>Mobile</strong><br>Use the arrow buttons below the LCD screen, or swipe across the playfield.<br><br><strong>Resume</strong><br>Select Continue in the pause menu to resume. Closing this guide does not automatically resume the game.</p>
+            <p><strong>Mobile</strong><br>Use the arrow buttons below the LCD screen or swipe across the playfield. In fullscreen, swipe to turn and use Pause next to Score.<br><br><strong>Resume</strong><br>Select Continue in the pause menu to resume. Closing this guide does not automatically resume the game.</p>
           </div>
         </section>
         <section><h3>Speed levels (1–9)</h3>
@@ -80,7 +80,6 @@ export function mountHowToPlay(options: GuideOptions): GuideController {
           <p><strong>Maze 3:</strong> horizontal and vertical partitions form corridors.</p>
           <p><strong>Maze 4:</strong> four connected areas with narrow passages.</p>
           <p><strong>Maze 5:</strong> the most complex network of walls and turns.</p>
-          <p class="howto-note">Mazes 2–5 are fixed, playable reconstructions based on descriptions; their exact layouts have not been verified against the original Nokia game. In these reconstructions, the outer edges are solid.</p>
         </section>
         <section aria-labelledby="howto-maze-heading">
           <h3 id="howto-maze-heading">Maze previews</h3>
@@ -122,14 +121,9 @@ export function mountHowToPlay(options: GuideOptions): GuideController {
     canvas.className = 'howto-map-canvas';
     canvas.setAttribute('role', 'img');
     canvas.setAttribute('aria-label', `${maze.name}: preview of the actual maze walls`);
-    const status = document.createElement('span');
-    status.className = 'howto-map-status';
-    status.textContent = maze.fidelity === 'reconstruction'
-      ? 'RECONSTRUCTION'
-      : maze.fidelity === 'documented-concept' ? 'DOCUMENTED CONCEPT' : 'ORIGINAL RULE';
     const description = document.createElement('p');
     description.textContent = ENGLISH_MAZE_DESCRIPTIONS[maze.id];
-    card.append(heading, canvas, status, description);
+    card.append(heading, canvas, description);
     grid.appendChild(card);
     drawMazePreview(canvas, maze);
   }
