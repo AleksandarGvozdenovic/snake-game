@@ -1,0 +1,214 @@
+:root {
+  font-family: 'Courier New', Consolas, monospace;
+  color: #dce9ce;
+  background: #202b1c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { width: 100%; height: 100%; margin: 0; }
+body { overflow: hidden; }
+button { font: inherit; }
+.app {
+  height: 100dvh;
+  width: 100%;
+  padding: 10px 15px 13px;
+  display: grid;
+  grid-template-rows: auto minmax(0,1fr) auto auto;
+  justify-items: center;
+  align-items: center;
+  gap: 9px;
+}
+.app-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: min(1300px, 100%);
+  font-size: 12px;
+  letter-spacing: .14em;
+}
+.app-heading strong { font-size: 17px; }
+.app-heading span { color: #a9bba0; }
+/* WIDER, LARGER LCD: approximately 1,050x700 on a 1080p laptop window. */
+.lcd-viewport {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #b2bd07;
+  width: min(1200px, calc(100vw - 35px), calc((100dvh - 156px)*1.52));
+  aspect-ratio: 1.52;
+  max-height: 100%;
+  min-width: 0;
+  min-height: 0;
+  border: 4px solid #627d43;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 0 5px #35452a, 0 15px 45px #0006;
+}
+.lcd-viewport:fullscreen {
+  width: 100%; height: 100%;
+  max-height: none; aspect-ratio: auto;
+  border: 0; border-radius: 0;
+}
+#lcd {
+  display: none;
+  flex: none;
+  margin: 0;
+  border: 0;
+  background: #b2bd07;
+  image-rendering: pixelated;
+  touch-action: none;
+}
+.nokia-panel {
+  position: absolute;
+  inset: 0;
+  background: #b2bd07;
+  color: #18260d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+.nokia-panel[hidden] { display: none; }
+.nokia-title-area {
+  flex: 0 0 60%;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.nokia-title-crop {
+  position: relative;
+  width: auto;
+  height: 99%;
+  max-width: 92%;
+  aspect-ratio: 809 / 580;
+  overflow: hidden;
+}
+.nokia-title-crop img {
+  display: block;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 50%;
+  image-rendering: auto;
+}
+.nokia-panel.no-title .nokia-title-area::after {
+  content: 'SNAKE II';
+  font-weight: 900; font-size: clamp(25px, 7vw, 70px);
+}
+.nokia-panel.no-title .nokia-title-crop { display: none; }
+.nokia-menu-area {
+  flex: 1;
+  width: min(75%, 775px);
+  min-height: 0;
+  padding: 2px 0 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+}
+.nokia-page-info {
+  text-align: center;
+  color: #17250e;
+  font-size: clamp(11px, 1.25vw, 17px);
+  font-weight: 900;
+  line-height: 1.35;
+}
+.nokia-page-info:empty { display: none; }
+.nokia-menu-items {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #495e2a transparent;
+}
+.nokia-option {
+  position: relative;
+  display: block;
+  text-align: left;
+  width: 100%;
+  min-height: clamp(34px, 4.5vh, 49px);
+  padding: 3px 12px 3px clamp(25px, 3vw, 42px);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #192512;
+  font-size: clamp(17px, 2.25vw, 30px);
+  font-weight: 900;
+  letter-spacing: .01em;
+  cursor: pointer;
+}
+.nokia-option[aria-current='true'] {
+  color: #b2bd07;
+  background: #1b2a11;
+}
+.nokia-option[aria-current='true']::before {
+  position: absolute;
+  content: '▶';
+  font-size: .8em;
+  color: #17240f;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.nokia-option:focus-visible { outline: 2px dotted #14220e; outline-offset: -2px; }
+.nokia-panel.inner-page .nokia-title-area { flex-basis: 35%; }
+.nokia-panel.inner-page .nokia-title-crop { height: 94%; }
+.nokia-panel.inner-page .nokia-menu-area { width: min(77%, 800px); }
+.nokia-panel.inner-page .nokia-option { min-height: 33px; }
+.control-strip { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.control-strip button {
+  min-height: 43px;
+  padding: 10px 17px;
+  border: 1px solid #829878;
+  border-radius: 6px;
+  background: #34472f;
+  color: #e6efda;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.control-strip button:hover { background: #506b41; }
+#status { margin: 0; min-height: 14px; text-align: center; font-size: 11px; }
+.remaster .lcd-viewport { box-shadow: 0 0 0 5px #35452a,0 0 40px #cde88777; }
+.snake-touch-controls { display: none; }
+@media (max-width: 650px) {
+  .app { padding: 6px; gap: 6px; }
+  .app-heading { justify-content: center; gap: 14px; }
+  .app-heading strong { font-size: 13px; }
+  .app-heading span { font-size: 9px; }
+  .lcd-viewport {
+    width: min(calc(100vw - 14px), calc((100dvh - 196px)*1.52));
+    border-width: 2px;
+  }
+  .nokia-title-area { flex-basis: 51%; }
+  .nokia-menu-area { width: 92%; padding-bottom: 3px; }
+  .nokia-option { min-height: 27px; font-size: clamp(12px, 4vw, 19px); }
+  .control-strip button { min-height: 35px; font-size: 10px; }
+  #status { font-size: 9px; }
+  .snake-touch-controls.active {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    z-index: 2;
+  }
+  .snake-touch-controls div { display: flex; gap: 2px; }
+  .snake-touch-controls button {
+    width: 42px; height: 31px;
+    border: 1px solid #799069;
+    border-radius: 4px;
+    background: #394e32;
+    color: #f5f8ea;
+    touch-action: manipulation;
+  }
+}
+@media (orientation: landscape) and (max-height: 550px) {
+  .app { gap: 3px; padding: 4px; }
+  .lcd-viewport { width: min(96vw, calc((100dvh - 100px)*1.52)); }
+  .nokia-title-area { flex-basis: 51%; }
+  .nokia-option { min-height: 24px; font-size: 14px; }
+  .control-strip button { min-height: 28px; padding: 4px 10px; }
+}

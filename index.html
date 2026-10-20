@@ -1,44 +1,85 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
 
-    <link rel="stylesheet" href="./css/style.css">
-    <script defer src="app.js"></script>
-</head>
-<body>
-    <header>
-        <h1>🐍 SNAKE 🐍</h1>
-    </header>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
 
-    <div class="wrapper-div">
-        <div class="g-details">
-            <span class="player-name">Player: <span id="player-name-display">/</span></span>
-            <span class="score">Score: 0</span>
-            <span class="high-score">High Score: 0</span>
-        </div>
-        <div class="g-board"></div>
-    </div>
+    <meta
+      name="theme-color"
+      content="#202b1c"
+    />
 
-    <div id="welcome-screen">
-        <h1>Welcome to Snake Game</h1>
-        <input type="text" id="player-name" placeholder="Enter your name">
-        <button id="start-button">Start Game</button>
-    </div>
+    <meta
+      name="description"
+      content="A Nokia 3310-inspired Snake II remake built with TypeScript and Canvas 2D."
+    />
 
-    <div id="game-over-screen" class="hidden">
-        <h1>Game Over!</h1>
-        <p>Your Score: <span id="final-score">0</span></p>
-        <button id="restart-button">Play Again</button>
-    </div>
+    <title>
+      Snake II — Nokia LCD Restoration
+    </title>
+  </head>
 
-    <audio id="eat-sound" src="./sounds/eat.mp3"></audio>
-    <audio id="game-over-sound" src="./sounds/game-over.mp3"></audio>
+  <body>
+    <main class="app">
 
-</body>
+      <header class="app-heading">
+        <strong>SNAKE II</strong>
+
+        <span>
+          NOKIA 3310 · LCD RESTORATION
+        </span>
+      </header>
+
+      <section
+        id="lcd-viewport"
+        class="lcd-viewport"
+        aria-label="Retro LCD screen"
+      >
+        <canvas
+          id="lcd"
+          width="84"
+          height="48"
+          role="img"
+          aria-label="Original Snake II title artwork on a monochrome LCD"
+        ></canvas>
+      </section>
+
+      <div class="control-strip">
+
+        <button
+          id="display-mode"
+          type="button"
+          aria-pressed="false"
+        >
+          REMASTER DISPLAY
+        </button>
+
+        <button
+          id="fullscreen"
+          type="button"
+        >
+          FULLSCREEN
+          <span aria-hidden="true">⛶</span>
+        </button>
+
+      </div>
+
+      <p
+        id="status"
+        role="status"
+        aria-live="polite"
+      >
+        Loading title bitmap…
+      </p>
+    </main>
+
+    <script
+      type="module"
+      src="/src/main.ts"
+    ></script>
+  </body>
 </html>
-

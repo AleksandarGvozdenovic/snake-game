@@ -1,0 +1,96 @@
+/* Website-only help. Never modifies the 84 x 48 game LCD. */
+.app-heading { gap: 8px 16px; }
+.howto-trigger {
+  margin-left: auto;
+  border: 1px solid #7c9870;
+  border-radius: 6px;
+  padding: 9px 12px;
+  color: #dceccd;
+  background: #33482c;
+  cursor: pointer;
+  white-space: nowrap;
+  font: 700 11px/1.25 Consolas, 'Courier New', monospace;
+  letter-spacing: .07em;
+}
+.howto-trigger:hover, .howto-trigger:focus-visible {
+  color: #17260e;
+  background: #b8cd91;
+  outline: 2px solid #d6ecb7;
+  outline-offset: 2px;
+}
+.snake-howto-dialog {
+  position: fixed;
+  width: min(940px, calc(100vw - 24px));
+  max-width: 940px;
+  height: min(89dvh, 860px);
+  max-height: calc(100dvh - 20px);
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  color: #e0eed3;
+  background: #1b2a17;
+  border: 1px solid #78946e;
+  border-radius: 12px;
+  box-shadow: 0 20px 70px #000c;
+}
+.snake-howto-dialog::backdrop { background: rgba(6, 12, 6, .82); }
+.howto-shell { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.howto-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  border-bottom: 1px solid #536f49;
+  padding: 21px 23px 17px;
+  background: #23391d;
+}
+.howto-eyebrow { margin: 0 0 5px; color: #adcb94; font: 700 11px Consolas, monospace; letter-spacing: .13em; }
+.howto-header h2 { font-size: clamp(18px, 3vw, 26px); line-height: 1.2; margin: 0; }
+.howto-subtitle { font-size: 12px; color: #b5c6aa; margin: 6px 0 0; }
+.howto-close {
+  cursor: pointer;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #809b74;
+  border-radius: 6px;
+  color: #e1eed9;
+  background: #33482d;
+  font-size: 21px;
+}
+.howto-close:hover, .howto-close:focus-visible { background: #5d7751; outline: 2px solid #bfe5a0; }
+.howto-scroll { overflow-y: auto; min-height: 0; padding: 14px 23px 26px; overscroll-behavior: contain; }
+.howto-scroll section { border-bottom: 1px solid #364c32; padding: 15px 0 17px; }
+.howto-scroll section:last-child { border: 0; }
+.howto-scroll h3 { margin: 0 0 10px; font-size: 15px; color: #d2ebbb; text-transform: uppercase; letter-spacing: .07em; }
+.howto-scroll p, .howto-scroll li { font: 13px/1.65 system-ui, -apple-system, sans-serif; color: #d6e4ce; }
+.howto-scroll p { margin: 0 0 9px; }
+.howto-scroll strong { color: #c4e1ab; }
+.howto-scroll ol { padding-left: 22px; margin: 5px 0; }
+.howto-two-col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.howto-note { color: #e3ca8c !important; font-style: italic !important; }
+.howto-maze-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 14px; }
+.howto-maze-card { min-width: 0; padding: 12px; border: 1px solid #617d54; border-radius: 7px; background: #283d24; }
+.howto-maze-card h4 { font-size: 13px; margin: 0 0 8px; }
+.howto-map-canvas { display: block; width: 100%; height: auto; aspect-ratio: 21 / 10; image-rendering: pixelated; background: #b5c982; }
+.howto-map-status { display: inline-block; margin: 9px 0 5px; padding: 3px 5px; border: 1px solid #718766; font-size: 9px; letter-spacing: .05em; color: #e9da9b; }
+.howto-maze-card p { font-size: 11px; line-height: 1.4; margin: 0; }
+@media (max-width: 720px) {
+  .app-heading { flex-wrap: wrap; }
+  .howto-trigger { font-size: 10px; padding: 7px 9px; }
+  .snake-howto-dialog { width: calc(100vw - 12px); max-height: calc(100dvh - 12px); height: 94dvh; }
+  .howto-header { padding: 16px 12px 13px; }
+  .howto-scroll { padding: 8px 12px 16px; }
+  .howto-two-col { grid-template-columns: 1fr; }
+  .howto-maze-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .howto-maze-card { padding: 8px; }
+}
+@media (max-width: 380px) { .howto-maze-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .snake-howto-dialog * { scroll-behavior: auto !important; } }
+
+/* Five app rows when the optional mobile navigation pad is displayed. */
+@media (max-width: 650px) {
+  .app:has(.snake-touch-controls.active) {
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+  }
+}

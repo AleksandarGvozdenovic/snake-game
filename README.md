@@ -1,67 +1,69 @@
-🐍 Snake Game
-## 🎮 About the Game
-Snake Game is a classic arcade-style browser game built with HTML, CSS, and JavaScript.
-The player controls a snake that moves around the grid, eating food to grow longer.
-The goal is to score as many points as possible before the snake collides with itself or the wall.
+# Snake II — Nokia 3310 Inspired Remake
 
-I chose to build this game because it’s a timeless concept and a great way to practice DOM manipulation, game logic, and event handling in JavaScript.
+A browser-based remake of **Snake II** featuring a monochrome 84 × 48 LCD display, handcrafted pixel sprites, six selectable maze modes, and keyboard and touch controls. Built with **TypeScript**, **Canvas 2D**, and **Vite**.
 
-## 🚀 Getting Started
-  ▶️ Play Online
-   https://aleksandargvozdenovic.github.io/snake-game/
- 
+[**Play on GitHub Pages**](https://aleksandargvozdenovic.github.io/snake-game/)
 
-## 🧭 How to Play
+![Snake II title screen](public/nokia/snake-ii-title-sheet.png)
 
-   Use the arrow keys ⬆️⬇️⬅️➡️ to control the snake’s direction.
-   Eat the red food to grow and earn points.
-   Avoid hitting walls or your own body — this ends the game.
-   Your high score is saved automatically in local storage.
+## Features
 
+- **No Maze** with wraparound, plus five obstacle mazes
+- Nine selectable speed levels
+- Custom bitmap sprites and continuous one-pixel maze walls
+- Food, time-limited bonus pickups, and locally saved high scores
+- Wall-turn grace period, pause menu, and responsive touch controls
+- Pixel-particle Game Over animation
+- Shared **Instructions / How To Play** dialog with maze previews
 
+## Controls
 
-## 🧱 Technologies Used
-  HTML5
-  CSS3 (Flexbox, Grid)
-  JavaScript (ES6+)
+| Action | Keyboard |
+| --- | --- |
+| Up | `↑`, `W`, `8` |
+| Down | `↓`, `S`, `2` |
+| Left | `←`, `A`, `4` |
+| Right | `→`, `D`, `6` |
+| Turn 90° left / right | `*` / `#` |
+| Pause | `P`, `C`, `Esc` |
+| Skip Game Over animation | `Enter`, `Space`, or tap the LCD |
 
-## ✅ Features Implemented
+On mobile, use the onscreen directional controls or swipe on the playfield.
 
-  ✅ Functional snake movement and collision detection
+## Getting started
 
-  ✅ Food generation and score increase when the snake eats
+Requires Node.js 22 or newer.
 
-  ✅ Dynamic speed increase as the game progresses
+```bash
+npm ci
+npm run dev
+```
 
-  ✅ Game Over screen with score display and restart button
+Run the test suite and production build:
 
-  ✅ Welcome screen with player name input before starting
+```bash
+npm test
+npm run build
+npm run preview
+```
 
-  ✅ Sound effects for eating and game over
+## Project structure
 
-  ✅ High Score saving using localStorage 
+| Path | Responsibility |
+| --- | --- |
+| `src/nokia/game/` | Snake logic, maze layouts, sprites, collision, and death animation |
+| `src/nokia/lcd/` | Monochrome framebuffer, pixel font, and Canvas renderer |
+| `src/nokia/ui/` | Instructions dialog and maze previews |
+| `src/styles/` | LCD layout and responsive styling |
+| `src/main.ts` | Screen navigation, controls, and game lifecycle |
+| `.github/workflows/deploy.yml` | GitHub Pages deployment |
 
-  ✅ Retro pixel-art design with Press Start 2P  font
+## Maze accuracy
 
-  ✅ Basic responsive adjustments for smaller devices
+This is a **Nokia-inspired remake**, not a pixel-perfect extraction from the original game. No Maze follows the documented wraparound behavior. Maze 1 uses an adapted surrounding wall; Mazes 2–5 are fixed, playable reconstructions rather than verified original ROM layouts. The bonus scoring rule is also adapted for this remake.
 
-## 🚀 Planned Features / Stretch Goals
+## Deployment
 
-  Add difficulty levels (Easy, Medium, Hard)
+Pushes to `main` trigger the GitHub Actions workflow, which runs tests, builds the site, and deploys the generated `dist/` folder. In the repository's **Settings → Pages**, set the source to **GitHub Actions**. The Vite base path is `/snake-game/`.
 
-  Add touch controls for mobile users (swipe or on-screen arrows)
-
-  Add a pause/resume button
-
-  Add a settings panel to toggle sound or adjust speed
-
-  Add scoreboard 
-
-  Improve responsiveness for tablets and small screens
-
-  Add smooth animations ( fade in/out transitions)
-
-  Add a dark/light mode toggle
-
-## 🙌 Attributions
-  Game concept inspired by the classic “Snake”
+The original HTML/CSS/JavaScript edition is preserved on the `legacy/html-css-js` branch.
