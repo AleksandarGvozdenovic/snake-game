@@ -3,6 +3,7 @@ import './styles/nokia-lcd.css';
 import { LCD_WIDTH, LcdFramebuffer } from './nokia/lcd/LcdFramebuffer';
 
 import { LcdCanvasRenderer } from './nokia/lcd/LcdCanvasRenderer';
+import { RetroAudio } from './nokia/audio/RetroAudio';
 
 import { SnakeIIEngine, type Direction } from './nokia/game/SnakeIIEngine';
 
@@ -63,6 +64,7 @@ let cornerGraceTimeout: number | undefined;
 let cornerGraceDeadline = 0;
 let cornerGraceRemaining = 0;
 
+const audio = new RetroAudio();
 let sound = true;
 
 let remaster = false;
@@ -185,37 +187,11 @@ function drawGameOverScreen(): void {
 }
 
 function beep(frequency = 480, length = 0.045): void {
+  audio.play(frequency, length);
+}
 
-  if (!sound) return;
-
-  try {
-
-    const AudioContextClass = window.AudioContext;
-
-    const context = new AudioContextClass();
-
-    const oscillator = context.createOscillator();
-
-    const gain = context.createGain();
-
-    oscillator.type = 'square';
-
-    oscillator.frequency.value = frequency;
-
-    gain.gain.value = 0.025;
-
-    oscillator.connect(gain);
-
-    gain.connect(context.destination);
-
-    oscillator.start();
-
-    oscillator.stop(context.currentTime + length);
-
-    oscillator.onended = () => { void context.close(); };
-
-  } catch {  }
-
+function unlockAudio(): void {
+  audio.unlock();
 }
 
 function cancelDeathAnimation(): void {
@@ -468,7 +444,12 @@ function menuEntries(): MenuItem[] {
 
     { text: `Maze: ${game.maze === 0 ? 'None' : game.maze}`, select: () => openPage('maze') },
 
-    { text: `Sound: ${sound ? 'On' : 'Off'}`, select: () => { sound = !sound; refreshMenu(); } },
+    { text: `Sound: ${sound ? 'On' : 'Off'}`, select: () => {
+      sound = !sound;
+      audio.setEnabled(sound);
+      if (sound) audio.preview();
+      refreshMenu();
+    } },
 
     { text: 'Back', select: () => openPage('menu') },
 
@@ -784,6 +765,10 @@ function onVisibilityChange(): void {
 landscapeMedia.addEventListener('change', onOrientationChange);
 document.addEventListener('visibilitychange', onVisibilityChange);
 
+// User-initiated input is required to enable sound on iOS and other browsers.
+window.addEventListener('pointerdown', unlockAudio, { capture: true, passive: true });
+window.addEventListener('touchstart', unlockAudio, { capture: true, passive: true });
+window.addEventListener('keydown', unlockAudio, { capture: true });
 window.addEventListener('keydown', handleKeyDown);
 
 modeButton.addEventListener('click', onModeClick);
@@ -808,7 +793,11 @@ if (import.meta.hot) {
     cancelCornerGraceTimeout();
     cancelDeathAnimation();
 
+    window.removeEventListener('pointerdown', unlockAudio, true);
+    window.removeEventListener('touchstart', unlockAudio, true);
+    window.removeEventListener('keydown', unlockAudio, true);
     window.removeEventListener('keydown', handleKeyDown);
+    audio.dispose();
     landscapeMedia.removeEventListener('change', onOrientationChange);
     document.removeEventListener('visibilitychange', onVisibilityChange);
 

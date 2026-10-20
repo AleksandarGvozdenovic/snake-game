@@ -86,4 +86,3 @@
 }
 @media (max-width: 380px) { .howto-maze-grid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .snake-howto-dialog * { scroll-behavior: auto !important; } }
-

@@ -47,7 +47,7 @@ export class LcdCanvasRenderer {
     if (stage?.classList.contains('lcd-stage')) {
       const availableWidth = Math.max(1, stage.clientWidth);
       const availableHeight = Math.max(1, stage.clientHeight);
-      const fitWidth = Math.min(1200, availableWidth, availableHeight * LCD_WIDTH / LCD_HEIGHT);
+      const fitWidth = Math.min(1080, availableWidth, availableHeight * LCD_WIDTH / LCD_HEIGHT);
       const fitHeight = fitWidth * LCD_HEIGHT / LCD_WIDTH;
       const width = `${Math.floor(fitWidth)}px`;
       const height = `${Math.floor(fitHeight)}px`;

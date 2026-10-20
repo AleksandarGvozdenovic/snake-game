@@ -30,7 +30,7 @@ button { font: inherit; }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: min(1300px, 100%);
+  width: min(1080px, 100%);
   font-size: 12px;
   letter-spacing: .14em;
 }
@@ -188,6 +188,12 @@ button { font: inherit; }
 .remaster .lcd-viewport { box-shadow: 0 0 0 4px #35452a, 0 0 30px #cde88755; }
 .snake-touch-controls { grid-area: touch; display: none; }
 .snake-touch-controls.active { display: none; }
+@media (min-width: 951px) and (pointer: fine) {
+  .nokia-title-area {
+    flex-basis: 54%;
+    padding-top: 10px;
+  }
+}
 @media (pointer: coarse), (max-width: 650px) {
   .app { gap: 6px; padding-left: max(7px, env(safe-area-inset-left)); padding-right: max(7px, env(safe-area-inset-right)); }
   .app-heading { justify-content: center; gap: 7px 13px; }
