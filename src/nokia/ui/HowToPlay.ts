@@ -67,7 +67,7 @@ export function mountHowToPlay(options: GuideOptions): GuideController {
         <section><h3>Controls</h3>
           <div class="howto-two-col">
             <p><strong>Desktop</strong><br>↑ / 8 — up<br>↓ / 2 — down<br>← / 4 — left<br>→ / 6 — right<br>W A S D — alternative controls<br>* — turn 90° left<br># — turn 90° right<br>P / C / Esc — pause</p>
-            <p><strong>Mobile</strong><br>Use the arrow buttons below the LCD screen or swipe across the playfield. In fullscreen, swipe to turn and use Pause next to Score.<br><br><strong>Resume</strong><br>Select Continue in the pause menu to resume. Closing this guide does not automatically resume the game.</p>
+            <p><strong>Mobile</strong><br>Use the arrow buttons or swipe across the playfield to turn. In landscape the arrows move beside the LCD. Rotating your phone pauses the game; select Continue to resume.<br><br><strong>Resume</strong><br>Select Continue in the pause menu to resume. Closing this guide does not automatically resume the game.</p>
           </div>
         </section>
         <section><h3>Speed levels (1–9)</h3>

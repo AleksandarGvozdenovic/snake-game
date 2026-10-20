@@ -7,7 +7,7 @@
 
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
 
     <meta
@@ -36,7 +36,8 @@
         </span>
       </header>
 
-      <section
+      <div id="lcd-stage" class="lcd-stage">
+        <section
         id="lcd-viewport"
         class="lcd-viewport"
         aria-label="Retro LCD screen"
@@ -48,7 +49,8 @@
           role="img"
           aria-label="Original Snake II title artwork on a monochrome LCD"
         ></canvas>
-      </section>
+        </section>
+      </div>
 
       <div class="control-strip">
 
@@ -58,14 +60,6 @@
           aria-pressed="false"
         >
           REMASTER DISPLAY
-        </button>
-
-        <button
-          id="fullscreen"
-          type="button"
-        >
-          FULLSCREEN
-          <span aria-hidden="true">⛶</span>
         </button>
 
       </div>

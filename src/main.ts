@@ -27,6 +27,7 @@ function requireElement<T extends HTMLElement>(id: string): T {
 }
 
 const viewport = requireElement<HTMLElement>('lcd-viewport');
+const stage = requireElement<HTMLElement>('lcd-stage');
 
 const canvas = requireElement<HTMLCanvasElement>('lcd');
 
@@ -34,13 +35,6 @@ const status = requireElement<HTMLElement>('status');
 
 const modeButton = requireElement<HTMLButtonElement>('display-mode');
 
-const fullscreenButton = requireElement<HTMLButtonElement>('fullscreen');
-function requireApp(): HTMLElement {
-  const element = document.querySelector<HTMLElement>('.app');
-  if (!element) throw new Error('Missing game container .app');
-  return element;
-}
-const app = requireApp();
 
 const framebuffer = new LcdFramebuffer();
 
@@ -143,37 +137,7 @@ touch.innerHTML = `
 
   <button type="button" data-dir="down" aria-label="Down">▼</button>`;
 
-viewport.after(touch);
-
-const fullscreenHud = document.createElement('div');
-fullscreenHud.className = 'fullscreen-game-hud';
-fullscreenHud.hidden = true;
-fullscreenHud.innerHTML = `
-  <span class="fullscreen-game-score" aria-label="Current score">SCORE: <span>0</span></span>
-  <div class="fullscreen-game-actions">
-    <button type="button" data-action="pause" aria-label="Pause game">Ⅱ <span>PAUSE</span></button>
-    <button type="button" data-action="exit" aria-label="Exit fullscreen">⤢</button>
-  </div>`;
-viewport.appendChild(fullscreenHud);
-const fullscreenScore = fullscreenHud.querySelector<HTMLElement>('.fullscreen-game-score span')!;
-
-function syncFullscreenGameView(): void {
-  const fullscreen = fullscreenFallback || document.fullscreenElement === app;
-  const isTouchLayout = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 650;
-  const isPlaying = page === 'game' && fullscreen && isTouchLayout;
-  app.classList.toggle('fullscreen-playing', isPlaying);
-  fullscreenHud.hidden = !isPlaying;
-  fullscreenScore.textContent = String(game.score);
-  renderer.setTopCrop(isPlaying ? 8 : 0);
-}
-
-function onFullscreenHudClick(event: MouseEvent): void {
-  const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-action]');
-  if (!button) return;
-  if (button.dataset.action === 'pause') pauseGame();
-  else if (button.dataset.action === 'exit') void toggleFullscreen();
-}
-fullscreenHud.addEventListener('click', onFullscreenHudClick);
+stage.after(touch);
 
 function textPixels(message: string, x: number, y: number): void {
   drawPixelText(framebuffer, message, x, y);
@@ -181,7 +145,6 @@ function textPixels(message: string, x: number, y: number): void {
 
 function drawGame(includeSnake = true): void {
 
-  fullscreenScore.textContent = String(game.score);
   framebuffer.clear();
 
   textPixels(`SCORE:${game.score}`, 1, 1);
@@ -342,7 +305,7 @@ function finishGame(): void {
   drawSnakeSprites(snakeFrame, game);
   const particles = createDeathParticles(
     snakeFrame.snapshot(),
-    pixelTextPoints('GAME OVER', 24, app.classList.contains('fullscreen-playing') ? 17 : 5),
+    pixelTextPoints('GAME OVER', 24, 5),
   );
   const started = performance.now();
   deathAnimationActive = true;
@@ -410,7 +373,6 @@ function newGame(): void {
 
   touch.classList.add('active');
 
-  syncFullscreenGameView();
 
 
   renderer.resize();
@@ -432,7 +394,6 @@ function resumeGame(): void {
 
   touch.classList.add('active');
 
-  syncFullscreenGameView();
 
   renderer.resize();
 
@@ -639,7 +600,6 @@ function openPage(next: Page): void {
   canvas.style.display = lcdGameOver ? 'block' : 'none';
   touch.classList.toggle('active', lcdGameOver);
   panel.classList.toggle('inner-page', next !== 'menu');
-  syncFullscreenGameView();
   refreshMenu();
   status.textContent = '';
 }
@@ -654,8 +614,6 @@ function handleKeyDown(event: KeyboardEvent): void {
 
   if (controlled.includes(key)) event.preventDefault();
 
-  if (key === 'escape' && fullscreenFallback) { setFullscreenFallback(false); return; }
-  if (key === 'f' && !event.repeat) { void toggleFullscreen(); return; }
 
   if (event.repeat && page !== 'game') return;
 
@@ -750,12 +708,15 @@ function onLcdClick(event: MouseEvent): void {
     return;
   }
   if (page !== 'over') return;
+  if (performance.now() < suppressClickUntil) return;
   const rect = canvas.getBoundingClientRect();
   if (rect.height <= 0) return;
   const logicalY = ((event.clientY - rect.top) / rect.height) * 48;
   if (logicalY >= 30 && logicalY <= 39) { items[0]?.select(); }
   else if (logicalY > 39) { items[1]?.select(); }
 }
+
+let suppressClickUntil = 0;
 
 let startX = 0;
 
@@ -775,6 +736,7 @@ function onTouchEnd(event: TouchEvent): void {
 
   if (page !== 'game') return;
   if (game.dead && deathAnimationActive) {
+    suppressClickUntil = performance.now() + 650;
     openPage('over');
     return;
   }
@@ -805,73 +767,27 @@ function updateMode(): void {
 
 function onModeClick(): void { remaster = !remaster; updateMode(); }
 
-let fullscreenFallback = false;
-
-function updateFullscreenButton(): void {
-  const active = fullscreenFallback || document.fullscreenElement === app;
-  fullscreenButton.textContent = active ? 'EXIT FULLSCREEN ⛶' : 'FULLSCREEN ⛶';
-  fullscreenButton.setAttribute('aria-pressed', String(active));
-}
-
-function setFullscreenFallback(active: boolean): void {
-  fullscreenFallback = active;
-  app.classList.toggle('fullscreen-fallback', active);
-  updateFullscreenButton();
-  syncFullscreenGameView();
-  window.requestAnimationFrame(() => renderer.resize());
-}
-
-async function toggleFullscreen(): Promise<void> {
-  if (fullscreenFallback) {
-    setFullscreenFallback(false);
-    return;
-  }
-
-  if (document.fullscreenElement === app) {
-    if (typeof document.exitFullscreen === 'function') {
-      try { await document.exitFullscreen(); }
-      catch {}
-    }
-    updateFullscreenButton();
-    return;
-  }
-
-  if (typeof app.requestFullscreen === 'function') {
-    try {
-      await app.requestFullscreen();
-      updateFullscreenButton();
-      syncFullscreenGameView();
-      renderer.resize();
-      return;
-    } catch {}
-  }
-
-  setFullscreenFallback(true);
-}
-
-function onFullscreenChange(): void {
-  if (document.fullscreenElement && fullscreenFallback) setFullscreenFallback(false);
-  updateFullscreenButton();
-  syncFullscreenGameView();
-  renderer.resize();
-}
-
-function onFullscreenClick(): void { void toggleFullscreen(); }
-
 const howToPlay = mountHowToPlay({
 
   onBeforeOpen: () => { if (shouldPauseForGuide(page)) pauseGame(); },
 
 });
 
+const landscapeMedia = window.matchMedia('(orientation: landscape)');
+function onOrientationChange(): void {
+  if (page === 'game' && !game.dead) pauseGame();
+  window.requestAnimationFrame(() => renderer.resize());
+}
+function onVisibilityChange(): void {
+  if (document.hidden && page === 'game' && !game.dead) pauseGame();
+}
+landscapeMedia.addEventListener('change', onOrientationChange);
+document.addEventListener('visibilitychange', onVisibilityChange);
+
 window.addEventListener('keydown', handleKeyDown);
 
 modeButton.addEventListener('click', onModeClick);
 
-fullscreenButton.addEventListener('click', onFullscreenClick);
-document.addEventListener('fullscreenchange', onFullscreenChange);
-window.addEventListener('resize', syncFullscreenGameView);
-updateFullscreenButton();
 
 touch.addEventListener('click', onTouchClick);
 canvas.addEventListener('click', onLcdClick);
@@ -893,16 +809,10 @@ if (import.meta.hot) {
     cancelDeathAnimation();
 
     window.removeEventListener('keydown', handleKeyDown);
+    landscapeMedia.removeEventListener('change', onOrientationChange);
+    document.removeEventListener('visibilitychange', onVisibilityChange);
 
     modeButton.removeEventListener('click', onModeClick);
-
-    fullscreenButton.removeEventListener('click', onFullscreenClick);
-    document.removeEventListener('fullscreenchange', onFullscreenChange);
-    window.removeEventListener('resize', syncFullscreenGameView);
-    app.classList.remove('fullscreen-fallback', 'fullscreen-playing');
-
-    fullscreenHud.removeEventListener('click', onFullscreenHudClick);
-    fullscreenHud.remove();
 
     touch.removeEventListener('click', onTouchClick);
     canvas.removeEventListener('click', onLcdClick);

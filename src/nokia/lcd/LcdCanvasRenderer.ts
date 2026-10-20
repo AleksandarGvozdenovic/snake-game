@@ -8,7 +8,6 @@ export class LcdCanvasRenderer {
   private pitch = 1;
   private disposed = false;
   private wallPixelMask: Uint8Array | null = null;
-  private topCrop = 0;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -25,8 +24,10 @@ export class LcdCanvasRenderer {
 
     this.observer = new ResizeObserver(this.onResize);
     this.observer.observe(viewport);
+    const stage = this.viewport.parentElement;
+    if (stage?.classList.contains('lcd-stage')) this.observer.observe(stage);
     window.addEventListener('resize', this.onResize);
-    document.addEventListener('fullscreenchange', this.onResize);
+    window.visualViewport?.addEventListener('resize', this.onResize);
 
     this.resize();
   }
@@ -39,33 +40,36 @@ export class LcdCanvasRenderer {
     this.wallPixelMask = mask;
   }
 
-  setTopCrop(top: number): void {
-    if (top === this.topCrop) return;
-    if (!Number.isInteger(top) || top < 0 || top >= LCD_HEIGHT) {
-      throw new Error('Invalid LCD crop');
-    }
-    this.topCrop = top;
-    this.resize();
-  }
-
   resize(): void {
     if (this.disposed) return;
 
-    const dpr = Math.max(1, window.devicePixelRatio || 1);
-    const compact = this.topCrop !== 0;
-    const hud = compact ? this.viewport.querySelector<HTMLElement>('.fullscreen-game-hud') : null;
-    const visibleRows = LCD_HEIGHT - this.topCrop;
-    const width = Math.max(1, this.viewport.clientWidth - (compact ? 4 : 16));
-    const height = Math.max(1, this.viewport.clientHeight - (compact ? (hud?.offsetHeight ?? 0) + 8 : 16));
-    const cssScale = Math.min(18, width / LCD_WIDTH, height / visibleRows);
+    const stage = this.viewport.parentElement;
+    if (stage?.classList.contains('lcd-stage')) {
+      const availableWidth = Math.max(1, stage.clientWidth);
+      const availableHeight = Math.max(1, stage.clientHeight);
+      const fitWidth = Math.min(1200, availableWidth, availableHeight * LCD_WIDTH / LCD_HEIGHT);
+      const fitHeight = fitWidth * LCD_HEIGHT / LCD_WIDTH;
+      const width = `${Math.floor(fitWidth)}px`;
+      const height = `${Math.floor(fitHeight)}px`;
+      if (this.viewport.style.width !== width) this.viewport.style.width = width;
+      if (this.viewport.style.height !== height) this.viewport.style.height = height;
+    }
 
-    this.pitch = Math.max(1, Math.floor(cssScale * dpr));
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const computed = window.getComputedStyle(this.viewport);
+    const horizontalInsets = parseFloat(computed.paddingLeft) + parseFloat(computed.paddingRight);
+    const verticalInsets = parseFloat(computed.paddingTop) + parseFloat(computed.paddingBottom);
+    const availableWidth = Math.max(1, this.viewport.clientWidth - (horizontalInsets || 0));
+    const availableHeight = Math.max(1, this.viewport.clientHeight - (verticalInsets || 0));
+    const scale = Math.min(availableWidth / LCD_WIDTH, availableHeight / LCD_HEIGHT);
+    this.pitch = Math.max(1, Math.floor(scale * dpr));
 
     const backingWidth = LCD_WIDTH * this.pitch;
-    const backingHeight = visibleRows * this.pitch;
-
-    this.canvas.style.width = `${backingWidth / dpr}px`;
-    this.canvas.style.height = `${backingHeight / dpr}px`;
+    const backingHeight = LCD_HEIGHT * this.pitch;
+    const cssWidth = `${backingWidth / dpr}px`;
+    const cssHeight = `${backingHeight / dpr}px`;
+    if (this.canvas.style.width !== cssWidth) this.canvas.style.width = cssWidth;
+    if (this.canvas.style.height !== cssHeight) this.canvas.style.height = cssHeight;
 
     if (this.canvas.width !== backingWidth) this.canvas.width = backingWidth;
     if (this.canvas.height !== backingHeight) this.canvas.height = backingHeight;
@@ -96,7 +100,7 @@ export class LcdCanvasRenderer {
     const dotSize = this.pitch - gap;
     const walls = this.wallPixelMask;
 
-    for (let y = this.topCrop; y < LCD_HEIGHT; y++) {
+    for (let y = 0; y < LCD_HEIGHT; y++) {
       const row = y * LCD_WIDTH;
 
       for (let x = 0; x < LCD_WIDTH; x++) {
@@ -104,7 +108,7 @@ export class LcdCanvasRenderer {
         if (!bits[index]) continue;
 
         const size = walls?.[index] ? this.pitch : dotSize;
-        ctx.fillRect(x * this.pitch, (y - this.topCrop) * this.pitch, size, size);
+        ctx.fillRect(x * this.pitch, y * this.pitch, size, size);
       }
     }
   }
@@ -114,6 +118,6 @@ export class LcdCanvasRenderer {
     this.disposed = true;
     this.observer.disconnect();
     window.removeEventListener('resize', this.onResize);
-    document.removeEventListener('fullscreenchange', this.onResize);
+    window.visualViewport?.removeEventListener('resize', this.onResize);
   }
 }

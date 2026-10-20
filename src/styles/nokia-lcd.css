@@ -1,24 +1,32 @@
+
 :root {
   font-family: 'Courier New', Consolas, monospace;
   color: #dce9ce;
   background: #202b1c;
   color-scheme: dark;
+  --lcd-background: #b2bd07;
 }
 * { box-sizing: border-box; }
 html, body { width: 100%; height: 100%; margin: 0; }
 body { overflow: hidden; }
 button { font: inherit; }
 .app {
+  height: 100vh;
   height: 100dvh;
   width: 100%;
-  padding: 10px 15px 13px;
+  min-height: 0;
+  padding: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+           max(8px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
   display: grid;
-  grid-template-rows: auto minmax(0,1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-areas: 'heading' 'lcd' 'touch' 'toolbar';
   justify-items: center;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
 }
 .app-heading {
+  grid-area: heading;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,34 +36,37 @@ button { font: inherit; }
 }
 .app-heading strong { font-size: 17px; }
 .app-heading span { color: #a9bba0; }
-/* WIDER, LARGER LCD: approximately 1,050x700 on a 1080p laptop window. */
+.lcd-stage {
+  grid-area: lcd;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
 .lcd-viewport {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #b2bd07;
-  width: min(1200px, calc(100vw - 35px), calc((100dvh - 156px)*1.52));
-  aspect-ratio: 1.52;
-  max-height: 100%;
-  min-width: 0;
-  min-height: 0;
-  border: 4px solid #627d43;
-  border-radius: 10px;
+  flex: none;
+  padding: 5px;
+  background: var(--lcd-background);
+  aspect-ratio: 84 / 48;
+  border: 3px solid #627d43;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 0 0 5px #35452a, 0 15px 45px #0006;
-}
-.lcd-viewport:fullscreen {
-  width: 100%; height: 100%;
-  max-height: none; aspect-ratio: auto;
-  border: 0; border-radius: 0;
+  box-shadow: 0 0 0 4px #35452a, 0 12px 35px #0006;
 }
 #lcd {
   display: none;
   flex: none;
   margin: 0;
   border: 0;
-  background: #b2bd07;
+  background: var(--lcd-background);
   image-rendering: pixelated;
   touch-action: none;
 }
@@ -158,10 +169,11 @@ button { font: inherit; }
 .nokia-panel.inner-page .nokia-title-crop { height: 94%; }
 .nokia-panel.inner-page .nokia-menu-area { width: min(77%, 800px); }
 .nokia-panel.inner-page .nokia-option { min-height: 33px; }
-.control-strip { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+.control-strip { grid-area: toolbar; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
 .control-strip button {
-  min-height: 43px;
-  padding: 10px 17px;
+  min-height: 41px;
+  padding: 9px 16px;
   border: 1px solid #829878;
   border-radius: 6px;
   background: #34472f;
@@ -169,161 +181,72 @@ button { font: inherit; }
   font-size: 12px;
   font-weight: bold;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .control-strip button:hover { background: #506b41; }
-#status { margin: 0; min-height: 14px; text-align: center; font-size: 11px; }
-.remaster .lcd-viewport { box-shadow: 0 0 0 5px #35452a,0 0 40px #cde88777; }
-.snake-touch-controls { display: none; }
-@media (max-width: 650px) {
-  .app { padding: 6px; gap: 6px; }
-  .app-heading { justify-content: center; gap: 14px; }
+#status { display: none; }
+.remaster .lcd-viewport { box-shadow: 0 0 0 4px #35452a, 0 0 30px #cde88755; }
+.snake-touch-controls { grid-area: touch; display: none; }
+.snake-touch-controls.active { display: none; }
+@media (pointer: coarse), (max-width: 650px) {
+  .app { gap: 6px; padding-left: max(7px, env(safe-area-inset-left)); padding-right: max(7px, env(safe-area-inset-right)); }
+  .app-heading { justify-content: center; gap: 7px 13px; }
   .app-heading strong { font-size: 13px; }
   .app-heading span { font-size: 9px; }
-  .lcd-viewport {
-    width: min(calc(100vw - 14px), calc((100dvh - 196px)*1.52));
-    border-width: 2px;
-  }
+  .lcd-viewport { padding: 3px; border-width: 2px; border-radius: 6px; box-shadow: 0 0 0 2px #35452a; }
   .nokia-title-area { flex-basis: 51%; }
   .nokia-menu-area { width: 92%; padding-bottom: 3px; }
   .nokia-option { min-height: 27px; font-size: clamp(12px, 4vw, 19px); }
-  .control-strip button { min-height: 35px; font-size: 10px; }
-  #status { font-size: 9px; }
+  .control-strip button { min-height: 37px; font-size: 11px; }
   .snake-touch-controls.active {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 9px;
     align-items: center;
-    z-index: 2;
   }
-  .snake-touch-controls div { display: flex; gap: 8px; }
+  .snake-touch-controls div { display: flex; gap: 9px; }
   .snake-touch-controls button {
-    width: 52px; height: 44px;
+    width: 56px;
+    height: 47px;
     border: 1px solid #799069;
-    border-radius: 6px;
+    border-radius: 7px;
     background: #394e32;
     color: #f5f8ea;
-    font-size: 19px;
+    font-size: 20px;
     font-weight: 700;
     touch-action: manipulation;
   }
 }
-@media (orientation: landscape) and (max-height: 550px) {
-  .app { gap: 3px; padding: 4px; }
-  .lcd-viewport { width: min(96vw, calc((100dvh - 100px)*1.52)); }
-  .nokia-title-area { flex-basis: 51%; }
-  .nokia-option { min-height: 24px; font-size: 14px; }
-  .control-strip button { min-height: 28px; padding: 4px 10px; }
-}
-
-.app:fullscreen,
-.app.fullscreen-fallback {
-  width: 100%;
-  height: 100dvh;
-  padding: max(8px, env(safe-area-inset-top))
-           max(8px, env(safe-area-inset-right))
-           max(8px, env(safe-area-inset-bottom))
-           max(8px, env(safe-area-inset-left));
-  background: #202b1c;
-}
-.app.fullscreen-fallback {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-}
-.app:fullscreen .lcd-viewport,
-.app.fullscreen-fallback .lcd-viewport {
-  width: min(1200px, calc(100vw - 18px), calc((100dvh - 162px) * 1.52));
-}
-@media (orientation: landscape) and (max-height: 550px) {
-  .snake-touch-controls.active { gap: 4px; }
+@media (orientation: landscape) and (max-height: 600px) and (pointer: coarse),
+       (orientation: landscape) and (max-height: 600px) and (max-width: 950px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0,1fr) auto;
+    grid-template-areas: 'heading heading' 'lcd touch' 'toolbar toolbar';
+    column-gap: 12px;
+    row-gap: 5px;
+    padding-top: max(4px, env(safe-area-inset-top));
+    padding-bottom: max(4px, env(safe-area-inset-bottom));
+  }
+  .lcd-stage { min-width: 0; }
+  .app-heading strong { font-size: 12px; }
+  .nokia-option { min-height: 23px; font-size: 13px; }
+  .control-strip button { padding: 5px 14px; min-height: 32px; }
+  .snake-touch-controls.active { gap: 5px; }
   .snake-touch-controls div { gap: 5px; }
-  .snake-touch-controls button { width: 46px; height: 32px; font-size: 16px; }
-  .app:fullscreen .lcd-viewport,
-  .app.fullscreen-fallback .lcd-viewport {
-    width: min(96vw, calc((100dvh - 180px) * 1.52));
+  .snake-touch-controls button { width: 46px; height: 35px; font-size: 17px; }
+}
+@media (max-height: 360px) and (orientation: landscape) {
+  .app-heading span { display: none; }
+  .control-strip button { min-height: 28px; }
+  .snake-touch-controls button { height: 30px; }
+}
+@media (max-width: 650px) and (orientation: portrait) {
+  .app {
+    grid-template-rows: auto auto auto auto;
+    align-content: center;
   }
-}
-
-
-/* Compact phone fullscreen: gameplay, score and accessible pause/exit only. */
-.fullscreen-game-hud { display: none; }
-.fullscreen-game-hud[hidden] { display: none !important; }
-.app.fullscreen-playing:fullscreen,
-.app.fullscreen-playing.fullscreen-fallback {
-  display: block;
-  width: 100%;
-  height: 100dvh;
-  padding: 0;
-  background: #b2bd07;
-}
-.app.fullscreen-playing .app-heading,
-.app.fullscreen-playing .control-strip,
-.app.fullscreen-playing #status,
-.app.fullscreen-playing .snake-touch-controls {
-  display: none !important;
-}
-.app.fullscreen-playing .lcd-viewport {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
-  aspect-ratio: auto;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 0;
-}
-.app.fullscreen-playing .fullscreen-game-hud {
-  order: -1;
-  display: flex;
-  width: 100%;
-  min-height: 48px;
-  padding: max(7px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 7px max(12px, env(safe-area-inset-left));
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  color: #14220e;
-  font-size: clamp(14px, 2.8vw, 19px);
-  font-weight: 900;
-  letter-spacing: .045em;
-}
-.fullscreen-game-actions { display: flex; gap: 10px; }
-.fullscreen-game-actions button {
-  min-width: 46px;
-  min-height: 38px;
-  padding: 5px 11px;
-  border: 2px solid #354a29;
-  border-radius: 5px;
-  background: #c2cd47;
-  color: #14220e;
-  font-size: 14px;
-  font-weight: bold;
-  touch-action: manipulation;
-  cursor: pointer;
-}
-.fullscreen-game-actions button:focus-visible { outline: 3px solid #14220e; outline-offset: 2px; }
-.app.fullscreen-playing #lcd { align-self: center; margin-top: auto; margin-bottom: auto; max-width: 100%; max-height: 100%; }
-@media (orientation: landscape) and (max-height: 550px) {
-  .app.fullscreen-playing .fullscreen-game-hud { min-height: 38px; padding-top: 3px; padding-bottom: 3px; }
-  .app.fullscreen-playing .fullscreen-game-actions button { min-height: 30px; padding-top: 2px; padding-bottom: 2px; }
-}
-
-#status { visibility: hidden; }
-
-@media (pointer: coarse) {
-  .app.fullscreen-playing:fullscreen,
-  .app.fullscreen-playing.fullscreen-fallback {
-    overscroll-behavior: none;
-  }
-  .app.fullscreen-playing .lcd-viewport {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  .app.fullscreen-playing #lcd {
-    touch-action: none;
+  .lcd-stage {
+    height: min(58vw, max(100px, calc(100dvh - 245px)));
   }
 }

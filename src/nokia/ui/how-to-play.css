@@ -87,9 +87,3 @@
 @media (max-width: 380px) { .howto-maze-grid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .snake-howto-dialog * { scroll-behavior: auto !important; } }
 
-/* Five app rows when the optional mobile navigation pad is displayed. */
-@media (max-width: 650px) {
-  .app:has(.snake-touch-controls.active) {
-    grid-template-rows: auto minmax(0, 1fr) auto auto auto;
-  }
-}

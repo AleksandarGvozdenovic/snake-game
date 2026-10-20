@@ -28,7 +28,7 @@ A browser-based remake of **Snake II** featuring a monochrome 84 × 48 LCD displ
 | Pause | `P`, `C`, `Esc` |
 | Skip Game Over animation | `Enter`, `Space`, or tap the LCD |
 
-On mobile, use the onscreen directional controls or swipe on the playfield. During fullscreen gameplay, the LCD playfield is enlarged, with **Score**, **Pause**, and **Exit** controls in a compact header; swipe on the playfield to turn.
+On mobile, use the onscreen directional controls or swipe on the playfield. The LCD keeps its full 84 × 48 layout in both portrait and landscape. Rotating the device pauses active gameplay so it can be safely resumed from the pause menu.
 
 ## Getting started
 
